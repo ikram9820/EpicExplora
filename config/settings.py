@@ -32,6 +32,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "config.urls"
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -47,8 +48,8 @@ TEMPLATES = [
         },
     },
 ]
-WSGI_APPLICATION = "config.wsgi.application"
 
+WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASES = {   
     "default": {
@@ -56,7 +57,6 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",       
     }
 }     
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {
