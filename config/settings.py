@@ -1,9 +1,12 @@
 from pathlib import Path
+from dotenv import load_dotenv
 import os
 
+load_dotenv()
+
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = "django-insecure-d%)_zo6-ob6jro!jt2fqgc(zn4nkvsbd$whkpzmr!w*#h1$_a0"
-DEBUG = True
+SECRET_KEY = os.getenv('SECRET_KEY')
+DEBUG = os.getenv('DEBUG')
 ALLOWED_HOSTS = []
 
 
@@ -90,3 +93,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 INTERNAL_IPS = [ "127.0.0.1", ]
+
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_HOST_USER = "ikram9820khan@gmail.com"
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
