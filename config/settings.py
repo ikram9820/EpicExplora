@@ -66,6 +66,15 @@ DATABASES = {
     }
 }     
 
+# DATABASES = {
+#  'default': {
+#  'ENGINE': 'django.db.backends.postgresql',
+#  'NAME': 'blog',
+#  'USER': 'blog',
+#  'PASSWORD': 'xxxxxx',
+#  }
+# }
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -93,8 +102,7 @@ STATIC_ROOT = str(BASE_DIR.joinpath('staticfiles'))
 STATICFILES_DIRS = [str(BASE_DIR.joinpath('static'))]
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
+MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 INTERNAL_IPS = [ "127.0.0.1", ]
