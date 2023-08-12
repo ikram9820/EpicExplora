@@ -3,7 +3,13 @@
 
 {% block title %}{{ post.title }}{% endblock %}
 {% block content %}
- <h1>{{ post.title }}</h1>
+<div class="d-flex justify-content-between">
+    <h1>{{ post.title }}</h1>
+    <div>
+        <a href="{% url 'blog:delete_confirm' post.id %}" class="pe-2">Delete</a>
+        <a href="{% url 'blog:edit_post' post.id %}" class="ps-2">Edit</a>
+    </div>
+</div>
  <p class="date">
  Published {{ post.publish }} by {{ post.author }}
  </p>
@@ -37,5 +43,12 @@
     {% empty %}
     <p>There are no comments.</p>
 {% endfor %}
-{% include "blog/post/includes/comment_form.html" %}
+
+<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+    show comments
+</button>
+
+<div class="collapse" id="collapseExample">
+    {% include "blog/post/includes/comment_form.html" %} 
+</div>
 {% endblock %}

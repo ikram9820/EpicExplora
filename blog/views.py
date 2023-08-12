@@ -3,12 +3,14 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.postgres.search import SearchVector,SearchQuery, SearchRank
 from django.contrib.postgres.search import TrigramSimilarity
 from django.db.models import Count
-from django.shortcuts import render,get_object_or_404
+from django.shortcuts import redirect, render,get_object_or_404
+from django.urls import reverse
 from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+from django.utils.text import slugify
 from taggit.models import Tag
 from .models import Post
-from .forms import CommentForm, EmailPostForm, SearchForm
-
+from .forms import CommentForm, EmailPostForm, SearchForm, EditPostForm,AddPostForm
 
 def post_list(request,tag_slug=None):
     posts = Post.published.all()
@@ -40,7 +42,51 @@ def post_detail(request,year,month,day,post):
     form = CommentForm()
     return render(request,"blog/post/detail.html",{'post':post,'comments': comments,'form': form,
                                                    'similar_posts': similar_posts}) 
+@login_required
+def add_post(request):
+    if request.method == 'POST':
+        post_form = AddPostForm(data = request.POST)
+        if post_form.is_valid():
+            post = post_form.save(commit=False)
+            post.author = request.user
+            post.slug = slugify(post.title)
+            post.save()
+            url = reverse('dashboard')
+            return redirect(url)
+        
+    else:
+        post_form = AddPostForm()
+    return render(request, 'blog/post/add.html',{"post_form":post_form})
 
+@login_required
+def edit_post(request,pk):
+    post = get_object_or_404(Post, pk=pk)
+
+    if request.method == 'POST':
+        post_form = EditPostForm(instance=post,data = request.POST)
+        if post_form.is_valid():
+            post = post_form.save(commit=False)
+            post.slug = slugify(post.title)
+            post.save()
+            return redirect(post.get_absolute_url())
+        
+    else:
+        post_form = EditPostForm(instance=post)
+    return render(request, 'blog/post/edit.html',{"post_form":post_form})
+@login_required
+def delete_post(request,pk):
+    post = get_object_or_404(Post, pk=pk)
+    post.delete()
+    url = reverse("dashboard")
+    return redirect(url)
+@login_required  
+def delete_confirm(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    return render(request, "blog/post/delete_confirm.html",{"post":post})
+
+
+
+@login_required
 def share_post(request,id):
     post = get_object_or_404(Post, pk=id)
     sent = False

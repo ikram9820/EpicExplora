@@ -10,6 +10,7 @@ class PostAdmin(admin.ModelAdmin):
     list_filter = ["status","publish","author"]
     search_fields= ["title","body"]
     prepopulated_fields = {"slug":("title",)}
+    list_editable = ["status"]
     # raw_id_fields = ['author']
     date_hierarchy = 'publish'
     ordering = ['status', 'publish']

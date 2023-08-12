@@ -5,6 +5,7 @@
     <p>{{ request.user.first_name|default:request.user.username}} Welcome to your dashboard.</p>
     <p> You can <a href="{% url 'edit' %}">edit your 
         profile</a> or <a href="{% url 'password_change' %}">change your password</a>.</p>
+    <p> <a href="{% url 'blog:add_post' %}">Add New Post</a></p>
     <br/> <hr />
     {% if tag %}
         <h2>Posts tagged with "{{ tag.name }}"</h2>
