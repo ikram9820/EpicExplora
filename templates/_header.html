@@ -22,9 +22,7 @@
             </a>
             <ul class="dropdown-menu text-small shadow">
                 <li><a class="dropdown-item" href="{% url 'dashboard' %}">
-                  {% if request.user %}
-                  {{request.user.first_name}}'s Profile</a>
-                  {% endif %}
+                  {{ request.user.first_name|default:request.user.username}}'s Profile</a>
                 </li>
               <li><a class="dropdown-item" href="#">Settings</a></li>
               <li><hr class="dropdown-divider"></li>

@@ -1,16 +1,35 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from taggit.models import Tag
+
+
+from blog.models import Post
 
 from .forms import LoginForm, ProfileEditForm, UserEditForm, UserRegistrationForm
 from .models import Profile
 
 @login_required
-def dashboard(request):
- return render(request,'account/dashboard.html',{'section': 'dashboard'})
+def dashboard(request,tag_slug=None):
+    posts = Post.published.filter(author=request.user).order_by("-publish")
+    tag = None
+    if tag_slug:
+        tag = get_object_or_404(Tag, slug=tag_slug)
+        posts = posts.filter(tags__in=[tag])
+    POST_PER_PAGE = 5
+    PAGE_NO = request.GET.get('page', 1)
+    paginator = Paginator(posts,POST_PER_PAGE)
+    try:
+        posts = paginator.page(PAGE_NO)
+    except PageNotAnInteger:
+        posts = paginator.page(1)
+    except EmptyPage:
+        posts = paginator.page(paginator.num_pages)
+    return render(request,'account/dashboard.html',{"posts": posts,"tag":tag})
 
 def register(request):
     if request.method == 'POST':
