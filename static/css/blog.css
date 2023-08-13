@@ -82,7 +82,7 @@ input[type=submit] {
 .comment {
     padding:10px;
 }
-.comment:nth-child(even) {
+.comment:nth-child(odd) {
     background:#efefef;
 }
 .comment .info {

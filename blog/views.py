@@ -130,7 +130,7 @@ def post_comment(request, id):
         comment = form.save(commit=False)
         comment.post = post
         comment.save()
-        return render(request, 'blog/post/comment.html',{'post': post,'form': form,'comment': comment})
+        return redirect(post.get_absolute_url())
     
 def post_search(request):
     form = SearchForm()
