@@ -1,12 +1,14 @@
 from django.core.mail import send_mail
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.contrib import messages
 from django.contrib.postgres.search import SearchVector,SearchQuery, SearchRank
 from django.contrib.postgres.search import TrigramSimilarity
+from django.contrib.auth.decorators import login_required
 from django.db.models import Count
+from django.forms import ValidationError
 from django.shortcuts import redirect, render,get_object_or_404
 from django.urls import reverse
 from django.views.decorators.http import require_POST
-from django.contrib.auth.decorators import login_required
 from django.utils.text import slugify
 from taggit.models import Tag
 from .models import Post
@@ -50,7 +52,9 @@ def add_post(request):
             post = post_form.save(commit=False)
             post.author = request.user
             post.slug = slugify(post.title)
+            post.tags.add(*post_form["tags"].value().split(","))
             post.save()
+
             url = reverse('dashboard')
             return redirect(url)
         
@@ -61,27 +65,39 @@ def add_post(request):
 @login_required
 def edit_post(request,pk):
     post = get_object_or_404(Post, pk=pk)
-
+    
     if request.method == 'POST':
-        post_form = EditPostForm(instance=post,data = request.POST)
-        if post_form.is_valid():
-            post = post_form.save(commit=False)
-            post.slug = slugify(post.title)
-            post.save()
-            return redirect(post.get_absolute_url())
+        if request.user != post.author:
+            messages.error(request,"you are not allowed to edit this post")
+            post_form = EditPostForm(instance=post)
+
+        else:
+            post_form = EditPostForm(instance=post,data = request.POST)
+            if post_form.is_valid():
+                post = post_form.save(commit=False)
+                post.slug = slugify(post.title)
+                post.tags.add(*post_form["tags"].value().split(","))
+                post.save()
+                return redirect(post.get_absolute_url())
         
     else:
         post_form = EditPostForm(instance=post)
     return render(request, 'blog/post/edit.html',{"post_form":post_form})
+
+
 @login_required
 def delete_post(request,pk):
     post = get_object_or_404(Post, pk=pk)
+
     post.delete()
     url = reverse("dashboard")
     return redirect(url)
 @login_required  
 def delete_confirm(request, pk):
     post = get_object_or_404(Post, pk=pk)
+    if request.user != post.author:
+        messages.error(request,"you are not allowed to delete this post")
+        return redirect(post.get_absolute_url())
     return render(request, "blog/post/delete_confirm.html",{"post":post})
 
 
