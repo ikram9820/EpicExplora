@@ -12,11 +12,11 @@
         {% else %}
             <a href="{% url 'dashboard_with_tags' tag.slug %}">
         {% endif %}
-            {{ tag.name }} </a>
+           <span class='badge bg-primary'> {{ tag.name }} </span> </a>
     {% if not forloop.last %}, {% endif %}
     {% endfor %}
 </p>
-<p class="date">
-    Published {{ post.publish }} by {{ post.author }}
-</p>
+<span class="text-secondary small">
+    {{ post.publish }} Published by</span>   <a class='h4 text-primary' href= {% if request.user == post.author %}  "{% url 'dashboard' %}" {% else %} "{% url 'user_dashboard' post.author %}" {% endif %}> {{ post.author }} </a>
+
 {{ post.body|markdown|truncatewords_html:30 }}

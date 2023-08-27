@@ -13,9 +13,14 @@ from blog.models import Post
 from .forms import LoginForm, ProfileEditForm, UserEditForm, UserRegistrationForm
 from .models import Profile
 
-@login_required
-def dashboard(request,tag_slug=None):
-    posts = Post.published.filter(author=request.user).order_by("-publish")
+
+
+def dashboard(request,author=None ,tag_slug=None):
+    if author:
+        posts = Post.published.filter(author__username=author).order_by("-publish")
+    else:
+        posts = Post.published.filter(author=request.user).order_by("-publish")
+
     tag = None
     if tag_slug:
         tag = get_object_or_404(Tag, slug=tag_slug)
@@ -29,7 +34,9 @@ def dashboard(request,tag_slug=None):
         posts = paginator.page(1)
     except EmptyPage:
         posts = paginator.page(paginator.num_pages)
-    return render(request,'account/dashboard.html',{"posts": posts,"tag":tag})
+
+    return render(request,'account/dashboard.html',{"posts": posts,"author":author,"tag":tag})
+
 
 def register(request):
     if request.method == 'POST':
